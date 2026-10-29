@@ -230,7 +230,7 @@ function vDir(){setTop('Directorio');setFab(()=>formContacto());
   $('#vista').innerHTML=bannerRespaldo()+'<input id="q" type="search" placeholder="Buscar nombre, oficio, municipio…" value="'+esc(filtroDir.q)+'"><div class="chips">'+chips.map(c=>'<button class="chip '+(filtroDir.t===c?'on':'')+'" data-t="'+esc(c)+'">'+esc(c)+'</button>').join('')+'</div><div id="ls"></div>';
   const pintar=()=>{const q=norm(filtroDir.q);const ls=S.contactos.filter(c=>{if(filtroDir.t==='Proveedor'||filtroDir.t==='Contratista'){if((c.tipo||'Proveedor')!==filtroDir.t)return false}else if(filtroDir.t!=='Todos'&&c.categoria!==filtroDir.t)return false;
     return !q||norm([c.nombre,c.empresa,c.categoria,c.municipio,c.notas,c.tel].join(' ')).includes(q)}).sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
-    $('#ls').innerHTML=ls.length?ls.map(cardContacto).join(''):vacio(S.contactos.length?'Nada con ese filtro.':'Aún no hay contactos.<br>Toca <b>+</b> para agregar el primero.')};
+    $('#ls').innerHTML=ls.length?ls.map(cardContacto).join(''):vacio(S.contactos.length?'Nada con ese filtro.':'Aún no hay contactos.<br>Toca <b>+</b> para agregar el primero.<br><br><button class="btn" onclick="cargarIniciales()">Cargar datos iniciales</button>')};
   pintar();$('#q').oninput=e=>{filtroDir.q=e.target.value;pintar()};
   $$('.chip').forEach(b=>b.onclick=()=>{filtroDir.t=b.dataset.t;vDir()})}
 function vContacto(id){const c=contacto(id);if(!c){location.hash='dir';return}setTop(c.nombre,true);setFab(null);
@@ -463,17 +463,28 @@ async function respaldar(){toast('Preparando respaldo…');const data={};for(con
     if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:file.name});await setMeta('ultimoRespaldo',hoyISO());toast('Respaldo enviado');render(false);return}catch(e){if(e.name==='AbortError')return}}}
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));a.download=base+'.json';document.body.append(a);a.click();a.remove();await setMeta('ultimoRespaldo',hoyISO());toast('Respaldo descargado');render(false)}
 async function restaurar(file){let o;try{o=JSON.parse(await file.text())}catch(e){return alert('Ese archivo no es un respaldo válido.')}
+  await aplicarRespaldo(o)}
+async function aplicarRespaldo(o){
   if(!o||o.app!=='proveedores'||!o.data)return alert('Ese archivo no es un respaldo de esta app.');
-  if(!confirm('Esto REEMPLAZA todo lo que hay en el celular por el respaldo del '+new Date(o.fecha).toLocaleDateString('es-CO')+'. ¿Seguir?'))return;
+  const hay=S.contactos.length+S.cotizaciones.length+S.lista.length;
+  if(hay&&!confirm('Esto REEMPLAZA todo lo que hay en el celular por el respaldo del '+new Date(o.fecha).toLocaleDateString('es-CO')+'. ¿Seguir?'))return;
+  toast('Cargando…');
   for(const k of Object.keys(S)){await dbClear(k);for(const x of (o.data[k]||[]))await dbPut(k,x)}
   await dbClear('fotos');for(const f of (o.data.fotos||[])){const blob=await (await fetch(f.data)).blob();await dbPut('fotos',{id:f.id,blob})}
-  await cargar();refrescarListas();toast('Respaldo restaurado');location.hash='dir';render()}
+  await cargar();refrescarListas();toast('Datos cargados');location.hash='dir';render()}
+async function cargarIniciales(){const clave=prompt('Clave de los datos iniciales:');if(!clave)return;
+  try{toast('Descargando…');const r=await fetch('carga.bin?'+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('No se pudo descargar ('+r.status+'). Revisa la conexión.');
+    const b=new Uint8Array(await r.arrayBuffer());const salt=b.slice(0,16),iv=b.slice(16,28),ct=b.slice(28);
+    const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(clave.trim()),'PBKDF2',false,['deriveKey']);
+    const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:200000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
+    let pt;try{pt=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,ct)}catch(e){return alert('Clave incorrecta.')}
+    await aplicarRespaldo(JSON.parse(new TextDecoder().decode(pt)))}catch(e){alert(e.message||'No se pudo cargar.')}}
 let instalarEv=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();instalarEv=e;if((location.hash||'').startsWith('#mas'))render(false)});
 async function vMas(){setTop('Respaldo y app');setFab(null);const nf=(await dbAll('fotos')).length;let est='';try{const e=await navigator.storage.estimate();est=(e.usage/1048576).toFixed(1)+' MB usados'}catch(e){}
   let pers=false;try{pers=await navigator.storage.persisted()}catch(e){}const u=META.ultimoRespaldo;
   $('#vista').innerHTML=(instalarEv?'<button class="btn ancho" id="ins" style="margin:0 0 12px">Instalar en el celular</button>':'')+
   '<div class="card pad"><div class="renglon"><span>Contactos</span><b>'+S.contactos.length+'</b></div><div class="renglon"><span>Cotizaciones</span><b>'+S.cotizaciones.length+'</b></div><div class="renglon"><span>Fotos y PDF</span><b>'+nf+'</b></div><div class="renglon"><span>Materiales</span><b>'+S.materiales.length+'</b></div><div class="renglon"><span>Proyectos</span><b>'+S.proyectos.length+'</b></div><div class="renglon"><span>Almacenamiento</span><span>'+est+(pers?' · <span class="tag ok">protegido</span>':' · <span class="tag warn">no protegido</span>')+'</span></div><div class="renglon"><span>Último respaldo</span><b>'+(u?fechaTxt(u):'nunca')+'</b></div></div>'+
-  '<button class="btn ancho" id="res">'+ic.cloud+' Respaldar ahora</button><p class="mut">Se abre el menú de compartir: elige <b>Drive</b> y guárdalo en tu carpeta de respaldos. Incluye fotos y PDF.</p>'+
+  '<button class="btn sec ancho" onclick="cargarIniciales()" style="margin:0 0 4px">Cargar datos iniciales (con clave)</button><button class="btn ancho" id="res">'+ic.cloud+' Respaldar ahora</button><p class="mut">Se abre el menú de compartir: elige <b>Drive</b> y guárdalo en tu carpeta de respaldos. Incluye fotos y PDF.</p>'+
   '<label class="btn sec ancho">'+ic.up+' Restaurar desde un respaldo<input type="file" id="rst" accept=".json,.txt,application/json,text/plain" hidden></label><p class="mut">Úsalo si cambias de celular o se borra la app.</p>'+
   '<h3>Notas</h3><p class="mut">Todo vive en este celular y funciona sin señal. WhatsApp y Maps sí necesitan conexión; la llamada no. Los precios se comparan con IVA del 19% según lo que marques en cada ítem.</p>';
   const ins=$('#ins');if(ins)ins.onclick=async()=>{instalarEv.prompt();await instalarEv.userChoice;instalarEv=null;render(false)};
