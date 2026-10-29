@@ -1,0 +1,16 @@
+{
+  "name": "Proveedores y contratistas",
+  "short_name": "Proveedores",
+  "description": "Directorio de proveedores y contratistas, cotizaciones y comparativo de materiales. Funciona sin internet.",
+  "lang": "es-CO",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f2ee",
+  "theme_color": "#2f5d46",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

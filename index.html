@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2f5d46">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Proveedores</title>
+<style>
+:root{--bg:#f4f2ee;--card:#fff;--tx:#1d1d1b;--mut:#6b6a66;--pri:#2f5d46;--pri2:#e3eee7;--bor:#dedad2;--bad:#b3261e;--badbg:#fbe9e7;--ok:#1e7a46;--okbg:#e2f3e8;--wa:#1f9d55;--warn:#8a5a00;--warnbg:#fff3d6}
+@media (prefers-color-scheme:dark){:root{--bg:#141614;--card:#1e211f;--tx:#ecebe7;--mut:#a3a29c;--pri:#3d7a5b;--pri2:#23332a;--bor:#2f332f;--bad:#f2b8b5;--badbg:#3a1f1d;--ok:#8fd6a8;--okbg:#1d3326;--wa:#5fd08f;--warn:#f3cd75;--warnbg:#3a2f14}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{font:16px/1.4 system-ui,-apple-system,Roboto,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx)}
+body.noscroll{overflow:hidden}
+header{position:sticky;top:0;z-index:5;background:var(--pri);color:#fff;display:flex;align-items:center;gap:8px;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top))}
+header h1{font-size:19px;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header button{background:none;border:0;color:#fff;padding:4px;display:flex;cursor:pointer}
+main{padding:12px 16px 130px;max-width:720px;margin:0 auto}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--bor);padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav button{flex:1;background:none;border:0;color:var(--mut);font:inherit;font-size:11px;padding:8px 0 6px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+nav button.on{color:var(--pri);font-weight:700}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.acc svg.i,.btn svg.i{width:19px;height:19px}
+#fab{position:fixed;right:16px;bottom:calc(74px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:18px;border:0;background:var(--pri);color:#fff;font-size:32px;line-height:1;box-shadow:0 4px 14px rgba(0,0,0,.25);z-index:6;cursor:pointer}
+.card{background:var(--card);border:1px solid var(--bor);border-radius:14px;margin:0 0 10px;overflow:hidden}
+.card-main{display:block;padding:12px 14px;color:inherit;text-decoration:none}
+.pad{padding:12px 14px}
+.nom{font-weight:600;font-size:17px}
+.sub,.mut{color:var(--mut);font-size:14px}
+.stars{color:#d49a12;font-size:14px;letter-spacing:1px}
+.accs{display:flex;border-top:1px solid var(--bor)}
+.acc{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 4px;color:var(--pri);text-decoration:none;font-weight:600;font-size:14px;border-right:1px solid var(--bor)}
+.acc:last-child{border-right:0}
+.acc.wa{color:var(--wa)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0 12px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{border:1px solid var(--bor);background:var(--card);color:var(--tx);border-radius:20px;padding:7px 14px;white-space:nowrap;font:inherit;font-size:14px;cursor:pointer;text-decoration:none}
+.chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+input,select,textarea{width:100%;font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bor);border-radius:10px;padding:10px 12px;min-height:46px}
+textarea{min-height:0;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--pri);outline-offset:-1px}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.hoja{background:var(--bg);width:100%;max-width:720px;max-height:94vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
+.hoja h2{margin:2px 0 6px;font-size:20px}
+.frm label:not(.btn),.frm .lbl{display:block;font-size:13px;color:var(--mut);margin:12px 0 0}
+.frm label:not(.btn)>input,.frm label:not(.btn)>select,.frm label:not(.btn)>textarea,.frm label:not(.btn)>.conbtn{margin-top:4px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:12px;background:var(--pri);color:#fff;font:inherit;font-weight:600;padding:11px 16px;min-height:46px;text-decoration:none;cursor:pointer;text-align:center}
+.btn.sec{background:var(--pri2);color:var(--pri)}
+.btn.peligro{background:var(--badbg);color:var(--bad)}
+.btn.wa{background:var(--wa)}
+.btn.chico{min-height:38px;padding:7px 12px;font-size:14px}
+.ancho{width:100%;margin-top:10px}
+.botones{display:flex;gap:10px;margin-top:18px;position:sticky;bottom:calc(-16px - env(safe-area-inset-bottom));background:var(--bg);padding:10px 0 4px}
+.botones .btn{flex:1}
+.fila{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.fila .btn{flex:1}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tres{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:8px;margin-top:8px}
+.conbtn{display:flex;gap:8px}
+.conbtn input{flex:1}
+.seg{display:flex;background:var(--card);border:1px solid var(--bor);border-radius:12px;padding:3px;margin-top:12px}
+.seg label{flex:1;margin:0!important}
+.seg input{display:none}
+.seg span{display:block;text-align:center;padding:9px;border-radius:9px;color:var(--mut);font-size:15px;cursor:pointer}
+.seg input:checked+span{background:var(--pri);color:#fff;font-weight:600}
+.estrellas{display:flex;gap:4px;margin-top:4px}
+.estrellas button{background:none;border:0;font-size:30px;color:var(--bor);padding:0 2px;cursor:pointer}
+.estrellas button.on{color:#d49a12}
+.item{background:var(--card);border:1px solid var(--bor);border-radius:12px;padding:10px;margin-top:8px}
+.item .x{background:var(--badbg);color:var(--bad);border:0;border-radius:10px;font-size:16px;cursor:pointer}
+.fac{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--warn);grid-column:span 1;white-space:nowrap}
+.fac input{min-height:38px;padding:6px;width:64px;text-align:center}
+.item .tres:last-child{grid-template-columns:1.2fr 1.4fr 44px}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.thumb{position:relative;width:78px;height:78px;border-radius:10px;overflow:hidden;background:var(--pri2);display:flex;align-items:center;justify-content:center;color:var(--pri);font-weight:700;cursor:pointer;border:1px solid var(--bor)}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb .tx{position:absolute;top:3px;right:3px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:12px;cursor:pointer}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--pri2);color:var(--pri);vertical-align:middle}
+.tag.bad{background:var(--badbg);color:var(--bad)}
+.tag.ok{background:var(--okbg);color:var(--ok)}
+.tag.warn{background:var(--warnbg);color:var(--warn)}
+.aviso{background:var(--warnbg);color:var(--warn);border-radius:12px;padding:10px 12px;font-size:14px;margin:0 0 10px}
+.aviso .btn{margin-top:8px}
+.vacio{text-align:center;color:var(--mut);padding:40px 20px}
+.dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:15px}
+.dl dt{color:var(--mut)}
+.dl dd{margin:0;word-break:break-word}
+.tabla{width:100%;border-collapse:collapse;font-size:14px}
+.tabla td,.tabla th{padding:7px 4px;border-bottom:1px solid var(--bor);text-align:left;vertical-align:top}
+.tabla th{color:var(--mut);font-weight:500;font-size:12px}
+.num{text-align:right!important;white-space:nowrap}
+.renglon{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--bor)}
+.renglon:last-child{border-bottom:0}
+.renglon.mejor{color:var(--ok);font-weight:600}
+.grande{font-size:24px;font-weight:700}
+h3{font-size:14px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin:18px 0 8px}
+a.lnk{color:var(--pri);font-weight:600;text-decoration:none}
+.pre{white-space:pre-wrap;background:var(--card);border:1px solid var(--bor);border-radius:10px;padding:10px;font-size:14px;max-height:200px;overflow:auto}
+#toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30;max-width:90vw;text-align:center}
+#toast.on{opacity:1}
+.visor img{width:100%;border-radius:10px;display:block}
+</style>
+</head>
+<body>
+<header><button id="atras" hidden aria-label="Atrás"></button><h1 id="titulo">Directorio</h1></header>
+<main id="vista"></main>
+<button id="fab" aria-label="Agregar">+</button>
+<nav id="nav">
+  <button data-v="dir"></button>
+  <button data-v="cot"></button>
+  <button data-v="mat"></button>
+  <button data-v="pro"></button>
+  <button data-v="mas"></button>
+</nav>
+<div id="modal" hidden><div class="hoja" id="hoja"></div></div>
+<div id="toast"></div>
+<datalist id="dl-cat"></datalist><datalist id="dl-mun"></datalist><datalist id="dl-mat"></datalist><datalist id="dl-und"></datalist><datalist id="dl-mcat"></datalist>
+<script>
+'use strict';
+/* ---------- utilidades ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const hoyISO=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)};
+const diasDesde=f=>Math.floor((new Date(hoyISO())-new Date(f))/864e5);
+const fechaTxt=f=>{if(!f)return'';const [y,m,d]=f.split('-');return d+'/'+m+'/'+y};
+const fmt$=n=>'$'+Math.round(n||0).toLocaleString('es-CO');
+const fmtN=n=>(Math.round((n||0)*100)/100).toLocaleString('es-CO');
+const IVA=0.19;
+function parsePesos(s){const t=String(s??'').replace(/\./g,'').replace(',','.').replace(/[^\d.]/g,'');return parseFloat(t)||0}
+function parseNum(s){s=String(s??'').trim().replace(/[^\d.,-]/g,'');if(!s)return NaN;const c=s.lastIndexOf(','),p=s.lastIndexOf('.');
+  if(c>-1&&p>-1){s=c>p?s.replace(/\./g,'').replace(',','.'):s.replace(/,/g,'')}
+  else if(c>-1){s=(s.match(/,/g).length>1)?s.replace(/,/g,''):s.replace(',','.')}
+  else if(p>-1){const pt=s.split('.');if(pt.length>2)s=s.replace(/\./g,'');else if(pt[1].length===3&&/^-?[1-9]\d*$/.test(pt[0]))s=s.replace('.','')}
+  return parseFloat(s)}
+function parseNumDec(s,dec){s=String(s??'').trim().replace(/[^\d.,-]/g,'');if(!s)return NaN;s=dec===','?s.replace(/\./g,'').replace(',','.'):s.replace(/,/g,'');return parseFloat(s)}
+function detectDec(vals){let c=0,p=0;for(const v of vals){const a=v.lastIndexOf(','),b=v.lastIndexOf('.');if(a>-1&&b>-1){a>b?c++:p++}else if(a>-1)c++;else if(b>-1)p++}return c>p?',':'.'}
+function intl(t){let d=String(t||'').replace(/\D/g,'');if(d.length===10)d='57'+d;return d}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2600)}
+const vacio=m=>'<div class="vacio">'+m+'</div>';
+const P={people:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2c3 .2 5.5 2.2 5.5 5.3"/>',
+doc:'<path d="M6 2.5h8.5L19 7v14.5H6z"/><path d="M14 2.5V7h5M9 12h7M9 16h7"/>',
+box:'<path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5z"/><path d="M3.5 7.5 12 12l8.5-4.5M12 12v9"/>',
+folder:'<path d="M3 6.5h6l2 2h10v11H3z"/>',
+cloud:'<path d="M7 18.5a4.5 4.5 0 0 1-.5-9A6 6 0 0 1 18 8.5a4 4 0 0 1 0 10z"/><path d="M12 16v-5m-2.5 2.5L12 11l2.5 2.5"/>',
+tel:'<path d="M5 3.5h3.5l1.5 4-2 1.5a11 11 0 0 0 7 7l1.5-2 4 1.5V19a2 2 0 0 1-2 2A16.5 16.5 0 0 1 3 5.5a2 2 0 0 1 2-2z"/>',
+wa:'<path d="M4 20l1.3-3.8A8.5 8.5 0 1 1 8 19z"/><path d="M9 9.5c.5 2.5 2.5 4.5 5 5"/>',
+map:'<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+back:'<path d="M15 5l-7 7 7 7"/>',
+cam:'<path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/>',
+clip:'<path d="M20 11.5 12 19.5a5 5 0 0 1-7-7l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7L9.7 17.2a1.7 1.7 0 0 1-2.4-2.4L15 7"/>',
+share:'<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 10.8 7.6-3.6M8.2 13.2l7.6 3.6"/>',
+up:'<path d="M12 16V4m-5 5 5-5 5 5M4 20h16"/>'};
+const ic={};for(const k in P)ic[k]='<svg class="i" viewBox="0 0 24 24">'+P[k]+'</svg>';
+
+/* ---------- base de datos (IndexedDB, en el celular) ---------- */
+const STORES=['contactos','cotizaciones','materiales','proyectos','lista','fotos','meta'];
+let db;
+function abrirDB(){return new Promise((res,rej)=>{const r=indexedDB.open('proveedores-db',1);r.onupgradeneeded=()=>{const d=r.result;STORES.forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})})};r.onsuccess=()=>{db=r.result;res()};r.onerror=()=>rej(r.error)})}
+const ost=(s,m='readonly')=>db.transaction(s,m).objectStore(s);
+const rq=r=>new Promise((res,rej)=>{r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+const dbAll=s=>rq(ost(s).getAll()), dbGet=(s,id)=>rq(ost(s).get(id)), dbPut=(s,o)=>rq(ost(s,'readwrite').put(o)), dbDel=(s,id)=>rq(ost(s,'readwrite').delete(id)), dbClear=s=>rq(ost(s,'readwrite').clear());
+const S={contactos:[],cotizaciones:[],materiales:[],proyectos:[],lista:[]};
+let META={};
+async function cargar(){for(const k of Object.keys(S))S[k]=await dbAll(k);META={};(await dbAll('meta')).forEach(x=>META[x.id]=x.v)}
+async function guardar(s,o){await dbPut(s,o);const i=S[s].findIndex(x=>x.id===o.id);if(i>=0)S[s][i]=o;else S[s].push(o)}
+async function borrar(s,id){await dbDel(s,id);S[s]=S[s].filter(x=>x.id!==id)}
+async function setMeta(k,v){META[k]=v;await dbPut('meta',{id:k,v})}
+const contacto=id=>S.contactos.find(x=>x.id===id);
+const material=id=>S.materiales.find(x=>x.id===id);
+const proyecto=id=>S.proyectos.find(x=>x.id===id);
+const matPorNombre=n=>S.materiales.find(m=>norm(m.nombre)===norm(n));
+async function materialId(nombre,unidad){const n=String(nombre||'').trim();if(!n)return null;let m=matPorNombre(n);if(!m){m={id:uid(),nombre:n,unidad:(unidad||'und').trim()||'und',categoria:''};await guardar('materiales',m);refrescarListas()}return m.id}
+
+const CAT_BASE=['Ferretería','Hierro y acero','Madera','Cemento y agregados','Bloque y ladrillo','Eléctrico','Hidrosanitario','Pinturas','Vidrio y aluminio','Maestro de obra','Carpintero','Soldador','Electricista','Plomero','Transporte','Alquiler de equipo'];
+const UND_BASE=['und','m','ml','m²','m³','kg','bulto','varilla','galón','cuñete','rollo','tablero','lámina','viaje','día','global'];
+function refrescarListas(){const op=a=>[...new Set(a.filter(Boolean))].sort((x,y)=>x.localeCompare(y,'es')).map(v=>'<option value="'+esc(v)+'">').join('');
+  $('#dl-cat').innerHTML=op([...CAT_BASE,...S.contactos.map(c=>c.categoria)]);
+  $('#dl-mun').innerHTML=op(S.contactos.map(c=>c.municipio));
+  $('#dl-mat').innerHTML=op(S.materiales.map(m=>m.nombre));
+  $('#dl-und').innerHTML=op([...UND_BASE,...S.materiales.map(m=>m.unidad)]);
+  $('#dl-mcat').innerHTML=op(S.materiales.map(m=>m.categoria))}
+
+/* ---------- precios ---------- */
+const vencida=c=>diasDesde(c.fecha)>(+c.vigencia||30);
+function precioCon(it){return it.iva==='mas'?it.precio*(1+IVA):it.precio}
+function precioSin(it){return it.iva==='incl'?it.precio/(1+IVA):it.precio}
+function ofertas(matId){const map={};
+  for(const c of S.cotizaciones){if(!contacto(c.contactoId))continue;for(const it of (c.items||[])){if(it.materialId!==matId||!(it.precio>0))continue;const prev=map[c.contactoId];if(!prev||c.fecha>prev.cot.fecha)map[c.contactoId]={cot:c,it}}}
+  return Object.values(map).map(o=>{const f=o.it.factor>0?o.it.factor:1;return{...o,contacto:contacto(o.cot.contactoId),unit:precioCon(o.it)/f,unitSin:precioSin(o.it)/f,vencida:vencida(o.cot)}}).sort((a,b)=>a.unit-b.unit)}
+const mejorOf=ofs=>ofs.find(o=>!o.vencida)||ofs[0]||null;
+
+/* ---------- navegación ---------- */
+const VISTAS={dir:vDir,c:vContacto,cot:vCots,q:vCot,mat:vMats,m:vMat,pro:vPros,p:vPro,mas:vMas};
+const NAVMAP={c:'dir',q:'cot',m:'mat',p:'pro'};
+function render(scroll=true){const h=decodeURIComponent(location.hash.slice(1))||'dir';const [v,id,sub]=h.split('/');(VISTAS[v]||vDir)(id,sub);
+  const act=NAVMAP[v]||v;$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===act));if(scroll)window.scrollTo(0,0)}
+function setTop(t,atras){$('#titulo').textContent=t;$('#atras').hidden=!atras}
+function setFab(fn){const f=$('#fab');f.hidden=!fn;f.onclick=fn||null}
+let modalAbierto=false,trasCerrar=null;
+function abrirModal(html,montar){$('#hoja').innerHTML=html;$('#modal').hidden=false;document.body.classList.add('noscroll');$('#hoja').scrollTop=0;if(!modalAbierto)history.pushState({m:1},'');modalAbierto=true;montar&&montar($('#hoja'))}
+function cerrarModal(cb){trasCerrar=cb||null;if(modalAbierto)history.back();else cb&&cb()}
+window.addEventListener('popstate',()=>{if(modalAbierto){modalAbierto=false;$('#modal').hidden=true;$('#hoja').innerHTML='';document.body.classList.remove('noscroll');const cb=trasCerrar;trasCerrar=null;cb&&cb()}});
+window.addEventListener('hashchange',()=>{if(!modalAbierto)render()});
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal'||e.target.closest('[data-cerrar]'))cerrarModal()});
+$('#atras').innerHTML=ic.back;$('#atras').onclick=()=>history.back();
+
+/* ---------- respaldo: aviso ---------- */
+function bannerRespaldo(){const hay=S.contactos.length+S.cotizaciones.length+S.lista.length;if(!hay)return'';const u=META.ultimoRespaldo;if(u&&diasDesde(u)<=7)return'';
+  return '<div class="aviso">'+(u?'Llevas '+diasDesde(u)+' días sin respaldo.':'Todavía no has hecho ningún respaldo.')+' Si pierdes el celular, pierdes la información.<br><button class="btn chico" onclick="respaldar()">'+ic.cloud+' Respaldar ahora</button></div>'}
+
+/* ---------- DIRECTORIO ---------- */
+function linkMapa(c){if(c.lat!=null&&c.lng!=null)return 'geo:'+c.lat+','+c.lng+'?q='+c.lat+','+c.lng+'('+encodeURIComponent(c.nombre||'')+')';if(c.mapsUrl)return c.mapsUrl;if(c.direccion)return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(c.direccion+' '+(c.municipio||''));return ''}
+function acciones(c){const b=[];if(c.tel)b.push('<a class="acc" href="tel:+'+intl(c.tel)+'">'+ic.tel+'Llamar</a>');
+  if(c.wa||c.tel)b.push('<a class="acc wa" href="https://wa.me/'+intl(c.wa||c.tel)+'" target="_blank" rel="noopener">'+ic.wa+'WhatsApp</a>');
+  const mp=linkMapa(c);if(mp)b.push('<a class="acc" href="'+esc(mp)+'"'+(mp.startsWith('geo:')?'':' target="_blank" rel="noopener"')+'>'+ic.map+'Mapa</a>');
+  return b.length?'<div class="accs">'+b.join('')+'</div>':''}
+const estrellas=n=>n?'<div class="stars">'+'★'.repeat(n)+'☆'.repeat(5-n)+'</div>':'';
+function cardContacto(c){return '<div class="card"><a class="card-main" href="#c/'+c.id+'"><div class="nom">'+esc(c.nombre)+'</div><div class="sub">'+esc([c.tipo==='Contratista'?'Contratista':'',c.categoria,c.municipio].filter(Boolean).join(' · '))+'</div>'+estrellas(c.calif)+'</a>'+acciones(c)+'</div>'}
+const filtroDir={q:'',t:'Todos'};
+function vDir(){setTop('Directorio');setFab(()=>formContacto());
+  const cats=[...new Set(S.contactos.map(c=>c.categoria).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+  const chips=['Todos','Proveedor','Contratista',...cats];
+  $('#vista').innerHTML=bannerRespaldo()+'<input id="q" type="search" placeholder="Buscar nombre, oficio, municipio…" value="'+esc(filtroDir.q)+'"><div class="chips">'+chips.map(c=>'<button class="chip '+(filtroDir.t===c?'on':'')+'" data-t="'+esc(c)+'">'+esc(c)+'</button>').join('')+'</div><div id="ls"></div>';
+  const pintar=()=>{const q=norm(filtroDir.q);const ls=S.contactos.filter(c=>{if(filtroDir.t==='Proveedor'||filtroDir.t==='Contratista'){if((c.tipo||'Proveedor')!==filtroDir.t)return false}else if(filtroDir.t!=='Todos'&&c.categoria!==filtroDir.t)return false;
+    return !q||norm([c.nombre,c.empresa,c.categoria,c.municipio,c.notas,c.tel].join(' ')).includes(q)}).sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+    $('#ls').innerHTML=ls.length?ls.map(cardContacto).join(''):vacio(S.contactos.length?'Nada con ese filtro.':'Aún no hay contactos.<br>Toca <b>+</b> para agregar el primero.')};
+  pintar();$('#q').oninput=e=>{filtroDir.q=e.target.value;pintar()};
+  $$('.chip').forEach(b=>b.onclick=()=>{filtroDir.t=b.dataset.t;vDir()})}
+function vContacto(id){const c=contacto(id);if(!c){location.hash='dir';return}setTop(c.nombre,true);setFab(null);
+  const cots=S.cotizaciones.filter(q=>q.contactoId===id).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const fila=(k,v)=>v?'<dt>'+k+'</dt><dd>'+v+'</dd>':'';
+  $('#vista').innerHTML='<div class="card"><div class="pad"><div class="nom">'+esc(c.nombre)+'</div><div class="sub">'+esc([c.tipo||'Proveedor',c.categoria].filter(Boolean).join(' · '))+'</div>'+estrellas(c.calif)+'</div>'+acciones(c)+'</div>'+
+  '<div class="card pad"><dl class="dl">'+fila('Teléfono',esc(c.tel))+fila('WhatsApp',esc(c.wa))+fila('Empresa',esc(c.empresa))+fila('NIT/CC',esc(c.nit))+fila('Correo',c.email?'<a class="lnk" href="mailto:'+esc(c.email)+'">'+esc(c.email)+'</a>':'')+fila('Dirección',esc(c.direccion))+fila('Municipio',esc(c.municipio))+fila('Ubicación',c.lat!=null?esc(c.lat+', '+c.lng):(c.mapsUrl?'Link de Maps':''))+fila('Notas',esc(c.notas).replace(/\n/g,'<br>'))+fila('Creado',fechaTxt(c.creado))+'</dl></div>'+
+  '<div class="fila"><button class="btn" id="nq">+ Cotización</button><button class="btn sec" id="ed">Editar</button></div>'+
+  '<h3>Cotizaciones ('+cots.length+')</h3>'+(cots.length?cots.map(cardCot).join(''):vacio('Sin cotizaciones.'))+
+  '<button class="btn peligro ancho" id="bo">Borrar contacto</button>';
+  $('#nq').onclick=()=>formCot(null,id);$('#ed').onclick=()=>formContacto(c);
+  $('#bo').onclick=async()=>{if(!confirm('¿Borrar '+c.nombre+(cots.length?' y sus '+cots.length+' cotizaciones':'')+'?'))return;for(const q of cots)await borrarCot(q);await borrar('contactos',id);refrescarListas();history.back()}}
+function parseUbic(s){s=String(s||'').trim();const r={lat:null,lng:null,mapsUrl:''};if(!s)return r;
+  const m=s.match(/@(-?\d+\.\d+),\s*(-?\d+\.\d+)/)||s.match(/[?&](?:q|query|ll|destination)=(-?\d+\.\d+),\s*(-?\d+\.\d+)/)||s.match(/^(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)$/);
+  if(m){r.lat=+m[1];r.lng=+m[2]}else if(/^https?:\/\//i.test(s))r.mapsUrl=s;return r}
+function formContacto(c){const nuevo=!c;c=c||{tipo:'Proveedor'};
+  abrirModal('<form id="fc" class="frm"><h2>'+(nuevo?'Nuevo contacto':'Editar contacto')+'</h2>'+
+  (('contacts' in navigator&&'select' in navigator.contacts)?'<button type="button" class="btn sec ancho" id="pick">'+ic.people+' Traer de los contactos del celular</button>':'')+
+  '<div class="seg"><label><input type="radio" name="tipo" value="Proveedor" '+(c.tipo!=='Contratista'?'checked':'')+'><span>Proveedor</span></label><label><input type="radio" name="tipo" value="Contratista" '+(c.tipo==='Contratista'?'checked':'')+'><span>Contratista</span></label></div>'+
+  '<label>Nombre *<input name="nombre" required value="'+esc(c.nombre)+'"></label>'+
+  '<label>Oficio o categoría<input name="categoria" list="dl-cat" value="'+esc(c.categoria)+'" placeholder="Ferretería, hierro, carpintero…"></label>'+
+  '<div class="dos"><label>Celular<input name="tel" type="tel" inputmode="tel" value="'+esc(c.tel)+'"></label><label>WhatsApp (si es otro)<input name="wa" type="tel" inputmode="tel" value="'+esc(c.wa)+'"></label></div>'+
+  '<label>Municipio<input name="municipio" list="dl-mun" value="'+esc(c.municipio)+'"></label>'+
+  '<label>Ubicación<div class="conbtn"><input name="ubic" value="'+esc(c.ubic)+'" placeholder="Link de Maps o coordenadas"><button type="button" class="btn sec" id="gps">'+ic.map+'Aquí</button></div></label>'+
+  '<label>Dirección<input name="direccion" value="'+esc(c.direccion)+'"></label>'+
+  '<div class="lbl">Calificación</div><div class="estrellas" id="est">'+[1,2,3,4,5].map(i=>'<button type="button" data-v="'+i+'">★</button>').join('')+'</div><input type="hidden" name="calif" value="'+(c.calif||0)+'">'+
+  '<details '+(c.empresa||c.nit||c.email?'open':'')+'><summary class="mut" style="margin-top:14px;cursor:pointer">Más datos (empresa, NIT, correo)</summary>'+
+  '<label>Empresa<input name="empresa" value="'+esc(c.empresa)+'"></label><div class="dos"><label>NIT / CC<input name="nit" value="'+esc(c.nit)+'"></label><label>Correo<input name="email" type="email" value="'+esc(c.email)+'"></label></div></details>'+
+  '<label>Notas<textarea name="notas" rows="3">'+esc(c.notas)+'</textarea></label>'+
+  '<div class="botones"><button type="button" class="btn sec" data-cerrar>Cancelar</button><button class="btn">Guardar</button></div></form>',h=>{
+    const f=$('#fc',h);
+    const pintarEst=()=>{const v=+f.calif.value;$$('#est button',h).forEach(b=>b.classList.toggle('on',+b.dataset.v<=v))};pintarEst();
+    $$('#est button',h).forEach(b=>b.onclick=()=>{f.calif.value=(+f.calif.value===+b.dataset.v)?0:b.dataset.v;pintarEst()});
+    const pk=$('#pick',h);if(pk)pk.onclick=async()=>{try{const [r]=await navigator.contacts.select(['name','tel','email'],{multiple:false});if(!r)return;if(r.name&&r.name[0])f.nombre.value=r.name[0];if(r.tel&&r.tel[0])f.tel.value=r.tel[0];if(r.email&&r.email[0])f.email.value=r.email[0]}catch(e){toast('No se pudo abrir los contactos')}};
+    $('#gps',h).onclick=()=>{if(!navigator.geolocation)return toast('GPS no disponible');toast('Leyendo GPS…');navigator.geolocation.getCurrentPosition(p=>{f.ubic.value=p.coords.latitude.toFixed(6)+', '+p.coords.longitude.toFixed(6);toast('Ubicación tomada (±'+Math.round(p.coords.accuracy)+' m)')},()=>toast('No se pudo leer el GPS. Revisa el permiso de ubicación.'),{enableHighAccuracy:true,timeout:25000,maximumAge:0})};
+    f.onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(f));
+      if(nuevo&&v.tel.trim()){const dup=S.contactos.find(x=>x.tel&&intl(x.tel)===intl(v.tel));if(dup&&!confirm('Ya existe '+dup.nombre+' con ese número. ¿Guardar igual?'))return}
+      const o={...c,id:c.id||uid(),tipo:v.tipo||'Proveedor',nombre:v.nombre.trim(),categoria:v.categoria.trim(),tel:v.tel.trim(),wa:v.wa.trim(),municipio:v.municipio.trim(),ubic:v.ubic.trim(),direccion:v.direccion.trim(),calif:+v.calif||0,empresa:(v.empresa||'').trim(),nit:(v.nit||'').trim(),email:(v.email||'').trim(),notas:v.notas.trim(),creado:c.creado||hoyISO()};
+      Object.assign(o,parseUbic(o.ubic));await guardar('contactos',o);refrescarListas();toast('Guardado');
+      cerrarModal(()=>{if(nuevo)location.hash='c/'+o.id;else render(false)})}})}
+
+/* ---------- COTIZACIONES ---------- */
+function totalCot(q){return (q.items||[]).reduce((s,it)=>s+(it.cant>0?precioCon(it)*it.cant:0),0)}
+function cardCot(q){const c=contacto(q.contactoId);const p=proyecto(q.proyectoId);const t=totalCot(q);
+  return '<a class="card card-main" href="#q/'+q.id+'"><div class="nom">'+esc(c?c.nombre:'(sin proveedor)')+' '+(vencida(q)?'<span class="tag bad">Vencida</span>':'<span class="tag ok">Vigente</span>')+'</div><div class="sub">'+fechaTxt(q.fecha)+' · '+esc(p?p.nombre:'General')+' · '+(q.items||[]).length+' ítems'+((q.fotos||[]).length?' · '+q.fotos.length+' adj.':'')+(t?' · '+fmt$(t):'')+'</div></a>'}
+const filtroCot={q:'',p:''};
+function vCots(){setTop('Cotizaciones');setFab(()=>formCot());
+  const chips=[['','Todas'],['_g','General'],...S.proyectos.map(p=>[p.id,p.nombre])];
+  $('#vista').innerHTML=bannerRespaldo()+'<input id="q" type="search" placeholder="Buscar proveedor o material…" value="'+esc(filtroCot.q)+'">'+(S.proyectos.length?'<div class="chips">'+chips.map(([v,t])=>'<button class="chip '+(filtroCot.p===v?'on':'')+'" data-p="'+v+'">'+esc(t)+'</button>').join('')+'</div>':'<div style="height:10px"></div>')+'<div id="ls"></div>';
+  const pintar=()=>{const q=norm(filtroCot.q);const ls=S.cotizaciones.filter(x=>{if(filtroCot.p==='_g'&&x.proyectoId)return false;if(filtroCot.p&&filtroCot.p!=='_g'&&x.proyectoId!==filtroCot.p)return false;if(!q)return true;const c=contacto(x.contactoId);return norm([c&&c.nombre,c&&c.categoria,x.notas,...(x.items||[]).map(i=>{const m=material(i.materialId);return m&&m.nombre})].join(' ')).includes(q)}).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+    $('#ls').innerHTML=ls.length?ls.map(cardCot).join(''):vacio(S.cotizaciones.length?'Nada con ese filtro.':'Aún no hay cotizaciones.<br>Toca <b>+</b>, toma la foto y listo. Los ítems los puedes digitar después.')};
+  pintar();$('#q').oninput=e=>{filtroCot.q=e.target.value;pintar()};$$('.chip').forEach(b=>b.onclick=()=>{filtroCot.p=b.dataset.p;vCots()})}
+async function vCot(id){const q=S.cotizaciones.find(x=>x.id===id);if(!q){location.hash='cot';return}const c=contacto(q.contactoId);const p=proyecto(q.proyectoId);setTop('Cotización',true);setFab(null);
+  const filas=(q.items||[]).map(it=>{const m=material(it.materialId);return '<tr><td>'+esc(m?m.nombre:'?')+(it.factor&&it.factor!==1?'<div class="mut">1 '+esc(it.und)+' = '+fmtN(it.factor)+' '+esc(m?m.unidad:'')+'</div>':'')+'</td><td class="num">'+(it.cant?fmtN(it.cant)+' ':'')+esc(it.und||'')+'</td><td class="num">'+fmt$(it.precio)+'<div class="mut">'+({incl:'IVA incl.',mas:'+ IVA',no:'sin IVA'}[it.iva]||'')+'</div></td><td class="num">'+(it.cant?fmt$(precioCon(it)*it.cant):'')+'</td></tr>'}).join('');
+  const t=totalCot(q);
+  $('#vista').innerHTML='<div class="card"><div class="pad"><div class="nom">'+esc(c?c.nombre:'(sin proveedor)')+'</div><div class="sub">'+fechaTxt(q.fecha)+' · vigencia '+(q.vigencia||30)+' días '+(vencida(q)?'<span class="tag bad">Vencida</span>':'<span class="tag ok">Vigente</span>')+'</div><div class="sub">Proyecto: '+esc(p?p.nombre:'General')+'</div>'+(q.notas?'<p>'+esc(q.notas).replace(/\n/g,'<br>')+'</p>':'')+'</div>'+(c?acciones(c):'')+'</div>'+
+  '<h3>Soportes</h3><div class="thumbs" id="th"></div>'+
+  '<h3>Ítems</h3>'+((q.items||[]).length?'<div class="card pad"><table class="tabla"><tr><th>Material</th><th class="num">Cant.</th><th class="num">Unitario</th><th class="num">Total c/IVA</th></tr>'+filas+'</table>'+(t?'<div class="renglon"><b>Total con IVA</b><b>'+fmt$(t)+'</b></div>':'')+'</div>':vacio('Sin ítems digitados. Toca Editar para agregarlos y poder comparar precios.'))+
+  '<div class="fila"><button class="btn" id="ed">Editar</button><button class="btn peligro" id="bo">Borrar</button></div>';
+  const th=$('#th');for(const fid of (q.fotos||[])){const f=await dbGet('fotos',fid);if(f)th.append(thumbEl(f.blob,null,()=>verFoto(f)))}if(!th.children.length)th.innerHTML='<span class="mut">Sin fotos ni PDF.</span>';
+  $('#ed').onclick=()=>formCot(q);$('#bo').onclick=async()=>{if(!confirm('¿Borrar esta cotización?'))return;await borrarCot(q);history.back()}}
+async function borrarCot(q){for(const f of (q.fotos||[]))await dbDel('fotos',f);await borrar('cotizaciones',q.id)}
+function thumbEl(blob,onX,onClick){const d=document.createElement('div');d.className='thumb';if(blob.type&&blob.type.startsWith('image/')){const im=new Image();im.src=URL.createObjectURL(blob);d.append(im)}else d.innerHTML='<span>PDF</span>';
+  if(onX){const x=document.createElement('button');x.type='button';x.className='tx';x.textContent='✕';x.onclick=e=>{e.stopPropagation();onX()};d.append(x)}if(onClick)d.onclick=onClick;return d}
+function verFoto(f){const u=URL.createObjectURL(f.blob);const esImg=f.blob.type.startsWith('image/');
+  abrirModal('<div class="visor">'+(esImg?'<img src="'+u+'">':'<p>Archivo PDF.</p><a class="btn ancho" href="'+u+'" target="_blank">Abrir PDF</a>')+'<div class="botones"><button class="btn sec" data-cerrar>Cerrar</button><button class="btn" id="sh">'+ic.share+' Compartir</button></div></div>',h=>{
+    $('#sh',h).onclick=async()=>{const ext=esImg?'jpg':'pdf';const file=new File([f.blob],'cotizacion.'+ext,{type:f.blob.type||'application/pdf'});try{if(navigator.canShare&&navigator.canShare({files:[file]}))await navigator.share({files:[file]});else{const a=document.createElement('a');a.href=u;a.download=file.name;a.click()}}catch(e){}}})}
+async function comprimir(file){if(!file.type.startsWith('image/'))return file;try{const bmp=await createImageBitmap(file);const k=Math.min(1,1600/Math.max(bmp.width,bmp.height));const cv=document.createElement('canvas');cv.width=Math.round(bmp.width*k);cv.height=Math.round(bmp.height*k);cv.getContext('2d').drawImage(bmp,0,0,cv.width,cv.height);return await new Promise(r=>cv.toBlob(b=>r(b||file),'image/jpeg',0.75))}catch(e){return file}}
+function filaItem(it){it=it||{};const m=it.materialId?material(it.materialId):null;const d=document.createElement('div');d.className='item';
+  d.innerHTML='<input name="mat" list="dl-mat" placeholder="Material (ej. Cemento gris 50 kg)" value="'+esc(m?m.nombre:'')+'">'+
+  '<div class="tres"><input name="cant" inputmode="decimal" placeholder="Cant." value="'+(it.cant!=null?String(it.cant).replace('.',','):'')+'"><input name="und" list="dl-und" placeholder="Unidad" value="'+esc(it.und||'')+'"><input name="precio" inputmode="numeric" placeholder="$ unitario" value="'+(it.precio?Math.round(it.precio).toLocaleString('es-CO'):'')+'"></div>'+
+  '<div class="tres"><select name="iva">'+[['incl','IVA incluido'],['mas','+ IVA 19%'],['no','No aplica IVA']].map(([v,t])=>'<option value="'+v+'" '+((it.iva||'incl')===v?'selected':'')+'>'+t+'</option>').join('')+'</select><span class="fac" hidden>1 <b class="u1"></b> =<input name="factor" inputmode="decimal" value="'+String(it.factor||1).replace('.',',')+'"><b class="ub"></b></span><button type="button" class="x" aria-label="Quitar">✕</button></div>';
+  const g=n=>d.querySelector('[name='+n+']');
+  const upd=()=>{const mm=matPorNombre(g('mat').value);const u=g('und').value.trim();const fac=d.querySelector('.fac');if(mm&&u&&norm(u)!==norm(mm.unidad)){fac.hidden=false;fac.querySelector('.u1').textContent=u;fac.querySelector('.ub').textContent=mm.unidad}else{fac.hidden=true;g('factor').value=1}};
+  g('mat').addEventListener('change',()=>{const mm=matPorNombre(g('mat').value);if(mm&&!g('und').value.trim())g('und').value=mm.unidad;upd()});
+  g('mat').addEventListener('input',upd);g('und').addEventListener('input',upd);
+  g('precio').addEventListener('blur',()=>{const n=parsePesos(g('precio').value);g('precio').value=n?Math.round(n).toLocaleString('es-CO'):''});
+  d.querySelector('.x').onclick=()=>d.remove();upd();return d}
+function formCot(q,preC,preP){const nuevo=!q;q=q?JSON.parse(JSON.stringify(q)):{fecha:hoyISO(),vigencia:30,contactoId:preC||'',proyectoId:preP||'',items:[],fotos:[]};
+  const nuevas=[];let keep=[...(q.fotos||[])];
+  const provs=[...S.contactos].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+  abrirModal('<form class="frm" id="fq"><h2>'+(nuevo?'Nueva cotización':'Editar cotización')+'</h2>'+
+  (provs.length?'':'<p class="aviso">Primero agrega el proveedor en el Directorio.</p>')+
+  '<label>Proveedor / contratista *<select name="contactoId" required><option value="">— Elige —</option>'+provs.map(c=>'<option value="'+c.id+'" '+(c.id===q.contactoId?'selected':'')+'>'+esc(c.nombre)+(c.categoria?' · '+esc(c.categoria):'')+'</option>').join('')+'</select></label>'+
+  '<div class="dos"><label>Fecha<input type="date" name="fecha" value="'+q.fecha+'"></label><label>Vigencia (días)<input name="vigencia" inputmode="numeric" value="'+(q.vigencia||30)+'"></label></div>'+
+  '<label>Proyecto<select name="proyectoId"><option value="">General</option>'+S.proyectos.map(p=>'<option value="'+p.id+'" '+(p.id===q.proyectoId?'selected':'')+'>'+esc(p.nombre)+'</option>').join('')+'</select></label>'+
+  '<div class="lbl">Foto o PDF de la cotización</div><div class="thumbs" id="th"></div>'+
+  '<div class="dos"><label class="btn sec">'+ic.cam+' Tomar foto<input type="file" accept="image/*" capture="environment" hidden id="fcam"></label><label class="btn sec">'+ic.clip+' Adjuntar<input type="file" accept="image/*,application/pdf" multiple hidden id="fadj"></label></div>'+
+  '<div class="lbl">Ítems <span class="mut">— opcional, sirven para comparar precios</span></div><div id="its"></div>'+
+  '<button type="button" class="btn sec ancho" id="addi">+ Agregar ítem</button>'+
+  '<label>Notas<textarea name="notas" rows="2" placeholder="Forma de pago, transporte, tiempo de entrega…">'+esc(q.notas)+'</textarea></label>'+
+  '<div class="botones"><button type="button" class="btn sec" data-cerrar>Cancelar</button><button class="btn">Guardar</button></div></form>',h=>{
+    const f=$('#fq',h);const its=$('#its',h);
+    (q.items||[]).forEach(it=>its.append(filaItem(it)));
+    $('#addi',h).onclick=()=>{const r=filaItem();its.append(r);r.querySelector('input').focus()};
+    let gen=0;const pintar=async()=>{const my=++gen;const el=$('#th',h);if(!el)return;const out=[];for(const id of keep){const fo=await dbGet('fotos',id);if(fo)out.push(thumbEl(fo.blob,()=>{keep=keep.filter(x=>x!==id);pintar()}))}
+      nuevas.forEach((b,i)=>out.push(thumbEl(b,()=>{nuevas.splice(i,1);pintar()})));if(my!==gen)return;el.innerHTML='';out.forEach(x=>el.append(x));if(!out.length)el.innerHTML='<span class="mut">Nada adjunto.</span>'};pintar();
+    const tomar=async e=>{for(const fl of e.target.files)nuevas.push(await comprimir(fl));e.target.value='';pintar()};
+    $('#fcam',h).onchange=tomar;$('#fadj',h).onchange=tomar;
+    f.onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(f));
+      const filas=$$('.item',h).filter(d=>d.querySelector('[name=mat]').value.trim());
+      const sinFactor=filas.filter(d=>{const mm=matPorNombre(d.querySelector('[name=mat]').value);const u=d.querySelector('[name=und]').value.trim();return mm&&u&&norm(u)!==norm(mm.unidad)&&(parseNum(d.querySelector('[name=factor]').value)||1)===1});
+      if(sinFactor.length&&!confirm(sinFactor.length+' ítem(s) vienen en una unidad distinta a la del catálogo y la equivalencia quedó en 1. El comparativo quedaría mal. ¿Guardar igual?'))return;
+      const items=[];for(const d of filas){const g=n=>d.querySelector('[name='+n+']').value.trim();const ex=matPorNombre(g('mat'));let und=g('und')||(ex?ex.unidad:'und');const mid=await materialId(g('mat'),und);const mm=material(mid);
+        items.push({materialId:mid,cant:parseNum(g('cant'))||null,und,precio:parsePesos(g('precio')),iva:g('iva'),factor:norm(und)===norm(mm.unidad)?1:(parseNum(g('factor'))||1)})}
+      for(const id of (q.fotos||[]))if(!keep.includes(id))await dbDel('fotos',id);
+      const ids=[...keep];for(const b of nuevas){const id=uid();await dbPut('fotos',{id,blob:b});ids.push(id)}
+      const o={...q,id:q.id||uid(),contactoId:v.contactoId,fecha:v.fecha||hoyISO(),vigencia:parseInt(v.vigencia)||30,proyectoId:v.proyectoId,notas:v.notas.trim(),items,fotos:ids};
+      await guardar('cotizaciones',o);toast('Cotización guardada');cerrarModal(()=>{if(nuevo)location.hash='q/'+o.id;else render(false)})}})}
+
+/* ---------- MATERIALES ---------- */
+const filtroMat={q:''};
+function vMats(){setTop('Materiales');setFab(()=>formMat());
+  $('#vista').innerHTML=bannerRespaldo()+'<input id="q" type="search" placeholder="Buscar material…" value="'+esc(filtroMat.q)+'"><div style="height:10px"></div><div id="ls"></div>';
+  const pintar=()=>{const q=norm(filtroMat.q);const ls=S.materiales.filter(m=>!q||norm(m.nombre+' '+m.categoria).includes(q)).sort((a,b)=>(a.categoria||'zzz').localeCompare(b.categoria||'zzz','es')||a.nombre.localeCompare(b.nombre,'es'));
+    let html='',cat=null;for(const m of ls){const c=m.categoria||'Sin categoría';if(c!==cat){html+='<h3>'+esc(c)+'</h3>';cat=c}const ofs=ofertas(m.id);const b=mejorOf(ofs);
+      html+='<a class="card card-main" href="#m/'+m.id+'"><div class="nom">'+esc(m.nombre)+'</div><div class="sub">'+(b?fmt$(b.unit)+' / '+esc(m.unidad)+' c/IVA · '+esc(b.contacto.nombre)+(b.vencida?' <span class="tag bad">vencida</span>':'')+' · '+ofs.length+' prov.':'Unidad: '+esc(m.unidad)+' · sin precios')+'</div></a>'}
+    $('#ls').innerHTML=html||vacio(S.materiales.length?'Nada con ese filtro.':'El catálogo se llena solo cuando digitas ítems en cotizaciones o importas una lista. También puedes agregar con <b>+</b>.')};
+  pintar();$('#q').oninput=e=>{filtroMat.q=e.target.value;pintar()}}
+function vMat(id){const m=material(id);if(!m){location.hash='mat';return}setTop(m.nombre,true);setFab(null);const ofs=ofertas(id);const b=mejorOf(ofs);
+  $('#vista').innerHTML='<div class="card pad"><div class="nom">'+esc(m.nombre)+'</div><div class="sub">Unidad base: <b>'+esc(m.unidad)+'</b>'+(m.categoria?' · '+esc(m.categoria):'')+'</div></div>'+
+  '<h3>Precio por '+esc(m.unidad)+' (último de cada proveedor)</h3>'+(ofs.length?'<div class="card pad">'+ofs.map(o=>'<div class="renglon '+(o===b?'mejor':'')+'"><span>'+esc(o.contacto.nombre)+'<div class="mut">'+fechaTxt(o.cot.fecha)+' · cotizado '+fmt$(o.it.precio)+'/'+esc(o.it.und)+(o.vencida?' <span class="tag bad">vencida</span>':'')+'</div></span><span class="num">'+fmt$(o.unit)+'<div class="mut">'+fmt$(o.unitSin)+' sin IVA</div></span></div>').join('')+'</div>':vacio('Sin precios todavía.'))+
+  '<div class="fila"><button class="btn sec" id="ed">Editar</button><button class="btn peligro" id="bo">Borrar</button></div>';
+  $('#ed').onclick=()=>formMat(m);
+  $('#bo').onclick=async()=>{const usado=S.cotizaciones.some(q=>(q.items||[]).some(i=>i.materialId===id))||S.lista.some(l=>l.materialId===id);if(usado)return alert('Este material está en cotizaciones o listas. Quítalo de allí primero, o renómbralo.');if(!confirm('¿Borrar '+m.nombre+'?'))return;await borrar('materiales',id);refrescarListas();history.back()}}
+function formMat(m){const nuevo=!m;m=m||{unidad:'und'};
+  abrirModal('<form class="frm" id="fm"><h2>'+(nuevo?'Nuevo material':'Editar material')+'</h2><label>Nombre *<input name="nombre" required value="'+esc(m.nombre)+'"></label><div class="dos"><label>Unidad base<input name="unidad" list="dl-und" required value="'+esc(m.unidad)+'"></label><label>Categoría<input name="categoria" list="dl-mcat" value="'+esc(m.categoria)+'"></label></div>'+
+  (nuevo?'':'<p class="mut">Si cambias la unidad base, revisa las equivalencias de las cotizaciones de este material.</p>')+'<div class="botones"><button type="button" class="btn sec" data-cerrar>Cancelar</button><button class="btn">Guardar</button></div></form>',h=>{
+    $('#fm',h).onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target));const otro=matPorNombre(v.nombre);if(otro&&otro.id!==m.id)return alert('Ya existe un material con ese nombre.');
+      const o={...m,id:m.id||uid(),nombre:v.nombre.trim(),unidad:v.unidad.trim(),categoria:v.categoria.trim()};await guardar('materiales',o);refrescarListas();cerrarModal(()=>render(false))}})}
+
+/* ---------- PROYECTOS: lista de materiales y comparativo ---------- */
+function vPros(){setTop('Proyectos');setFab(()=>formPro());
+  $('#vista').innerHTML=bannerRespaldo()+(S.proyectos.length?[...S.proyectos].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es')).map(p=>{const n=S.lista.filter(l=>l.proyectoId===p.id).length;const c=S.cotizaciones.filter(q=>q.proyectoId===p.id).length;return '<a class="card card-main" href="#p/'+p.id+'"><div class="nom">'+esc(p.nombre)+'</div><div class="sub">'+n+' materiales en lista · '+c+' cotizaciones</div></a>'}).join(''):vacio('Sin proyectos.<br>Toca <b>+</b> para crear uno y cargar su lista de materiales.'))}
+function formPro(p){const nuevo=!p;p=p||{};
+  abrirModal('<form class="frm" id="fp"><h2>'+(nuevo?'Nuevo proyecto':'Editar proyecto')+'</h2><label>Nombre *<input name="nombre" required value="'+esc(p.nombre)+'"></label><div class="botones"><button type="button" class="btn sec" data-cerrar>Cancelar</button><button class="btn">Guardar</button></div>'+(nuevo?'':'<button type="button" class="btn peligro ancho" id="bo">Borrar proyecto y su lista</button>')+'</form>',h=>{
+    $('#fp',h).onsubmit=async e=>{e.preventDefault();const o={...p,id:p.id||uid(),nombre:e.target.nombre.value.trim()};await guardar('proyectos',o);cerrarModal(()=>{if(nuevo)location.hash='p/'+o.id;else render(false)})};
+    const bo=$('#bo',h);if(bo)bo.onclick=async()=>{if(!confirm('¿Borrar '+p.nombre+'? Se borra su lista de materiales; las cotizaciones quedan como "General".'))return;for(const l of S.lista.filter(l=>l.proyectoId===p.id))await borrar('lista',l.id);for(const q of S.cotizaciones.filter(q=>q.proyectoId===p.id))await guardar('cotizaciones',{...q,proyectoId:''});await borrar('proyectos',p.id);cerrarModal(()=>{location.hash='pro'})}})}
+function vPro(id,sub){const p=proyecto(id);if(!p){location.hash='pro';return}sub=sub||'lista';setTop(p.nombre,true);
+  const tabs='<div class="chips"><a class="chip '+(sub==='lista'?'on':'')+'" href="#p/'+id+'/lista">Lista de materiales</a><a class="chip '+(sub==='comp'?'on':'')+'" href="#p/'+id+'/comp">Comparativo de precios</a><button class="chip" id="edp">Editar</button></div>';
+  if(sub==='comp'){setFab(null);$('#vista').innerHTML=tabs+comparativoHTML(p);
+    $$('[data-pedir]').forEach(b=>b.onclick=()=>enviarTexto(textoPedido(p,b.dataset.pedir),contacto(b.dataset.pedir)))}
+  else{setFab(()=>formLista(id));const ls=S.lista.filter(l=>l.proyectoId===id).map(l=>({l,m:material(l.materialId)})).filter(x=>x.m).sort((a,b)=>a.m.nombre.localeCompare(b.m.nombre,'es'));
+    $('#vista').innerHTML=tabs+'<div class="fila"><button class="btn sec" id="imp">'+ic.up+' Importar CSV</button><button class="btn wa" id="pc">'+ic.wa+' Pedir cotización</button></div>'+
+    (ls.length?'<div class="card pad"><table class="tabla"><tr><th>Material</th><th class="num">Cant.</th><th class="num">Desp.</th><th class="num">Total</th></tr>'+ls.map(({l,m})=>{const al=l.und&&norm(l.und)!==norm(m.unidad);return '<tr data-l="'+l.id+'" style="cursor:pointer"><td>'+esc(m.nombre)+(al?'<div><span class="tag warn">⚠ lista en '+esc(l.und)+', catálogo en '+esc(m.unidad)+'</span></div>':'')+'</td><td class="num">'+fmtN(l.cant)+'</td><td class="num">'+(l.desp?fmtN(l.desp)+'%':'—')+'</td><td class="num"><b>'+fmtN(l.cant*(1+(l.desp||0)/100))+'</b> '+esc(l.und||m.unidad)+'</td></tr>'}).join('')+'</table></div><p class="mut">Toca un renglón para editarlo.</p>':vacio('Lista vacía.<br>Importa el CSV de la tabla de cantidades de Revit o agrega materiales con <b>+</b>.'));
+    $$('[data-l]').forEach(tr=>tr.onclick=()=>formLista(id,S.lista.find(x=>x.id===tr.dataset.l)));
+    $('#imp').onclick=()=>formCSV(id);$('#pc').onclick=()=>{if(!ls.length)return toast('La lista está vacía');enviarTexto(textoCotizar(p))}}
+  $('#edp').onclick=()=>formPro(p)}
+function formLista(pid,l){const nuevo=!l;l=l||{desp:0};const m0=l.materialId?material(l.materialId):null;
+  abrirModal('<form class="frm" id="fl"><h2>'+(nuevo?'Agregar material':'Editar renglón')+'</h2><label>Material *<input name="mat" list="dl-mat" required value="'+esc(m0?m0.nombre:'')+'"></label>'+
+  '<div class="tres"><label>Cantidad<input name="cant" inputmode="decimal" required value="'+(l.cant!=null?String(Math.round(l.cant*1000)/1000).replace('.',','):'')+'"></label><label>Unidad<input name="und" list="dl-und" value="'+esc(l.und||(m0?m0.unidad:''))+'"></label><label>Desperdicio %<input name="desp" inputmode="decimal" value="'+(l.desp||0)+'"></label></div>'+
+  '<div id="conv" class="aviso" hidden style="margin-top:12px">La lista está en <b class="u1"></b> y el catálogo en <b class="ub"></b>. Convierte para que el comparativo cuadre:<div class="conbtn" style="margin-top:8px;align-items:center">1 <span class="u1"></span> =<input id="fx" inputmode="decimal" placeholder="?" style="width:90px;flex:none"><span class="ub"></span><button type="button" class="btn chico" id="cv">Convertir</button></div></div>'+
+  '<div class="botones"><button type="button" class="btn sec" data-cerrar>Cancelar</button><button class="btn">Guardar</button></div>'+(nuevo?'':'<button type="button" class="btn peligro ancho" id="bo">Quitar de la lista</button>')+'</form>',h=>{
+    const f=$('#fl',h);const upd=()=>{const mm=matPorNombre(f.mat.value);const u=f.und.value.trim();const cv=$('#conv',h);if(mm&&u&&norm(u)!==norm(mm.unidad)){cv.hidden=false;$$('.u1',cv).forEach(x=>x.textContent=u);$$('.ub',cv).forEach(x=>x.textContent=mm.unidad)}else cv.hidden=true};
+    f.mat.addEventListener('change',()=>{const mm=matPorNombre(f.mat.value);if(mm&&!f.und.value.trim())f.und.value=mm.unidad;upd()});f.und.addEventListener('input',upd);upd();
+    $('#cv',h).onclick=()=>{const k=parseNum($('#fx',h).value);const c=parseNum(f.cant.value);if(!(k>0)||!(c>0))return toast('Escribe la equivalencia');const mm=matPorNombre(f.mat.value);f.cant.value=String(Math.round(c*k*1000)/1000).replace('.',',');f.und.value=mm.unidad;upd();toast('Convertido')};
+    f.onsubmit=async e=>{e.preventDefault();const und=f.und.value.trim()||(matPorNombre(f.mat.value)||{}).unidad||'und';const mid=await materialId(f.mat.value,und);
+      await guardar('lista',{...l,id:l.id||uid(),proyectoId:pid,materialId:mid,cant:parseNum(f.cant.value)||0,und,desp:parseNum(f.desp.value)||0});cerrarModal(()=>render(false))};
+    const bo=$('#bo',h);if(bo)bo.onclick=async()=>{await borrar('lista',l.id);cerrarModal(()=>render(false))}})}
+function comparar(pid){const rows=S.lista.filter(l=>l.proyectoId===pid).map(l=>{const m=material(l.materialId);if(!m)return null;const cant=l.cant*(1+(l.desp||0)/100);const alerta=!!(l.und&&norm(l.und)!==norm(m.unidad));const ofs=alerta?[]:ofertas(l.materialId);return{l,m,cant,ofs,b:mejorOf(ofs),alerta}}).filter(Boolean).sort((a,b)=>a.m.nombre.localeCompare(b.m.nombre,'es'));
+  const pv={};rows.forEach(r=>r.ofs.forEach(o=>{const k=o.cot.contactoId;pv[k]=pv[k]||{c:o.contacto,n:0,total:0,gana:[]};pv[k].n++;pv[k].total+=o.unit*r.cant}));rows.forEach(r=>{if(r.b)pv[r.b.cot.contactoId].gana.push(r)});
+  return{rows,pv:Object.values(pv).sort((a,b)=>b.gana.length-a.gana.length||a.total-b.total),total:rows.reduce((s,r)=>s+(r.b?r.b.unit*r.cant:0),0),totalSin:rows.reduce((s,r)=>s+(r.b?r.b.unitSin*r.cant:0),0)}}
+function comparativoHTML(p){const C=comparar(p.id);if(!C.rows.length)return vacio('La lista de materiales está vacía.');
+  const con=C.rows.filter(r=>r.b).length,sin=C.rows.filter(r=>!r.b&&!r.alerta).length,al=C.rows.filter(r=>r.alerta).length,venc=C.rows.filter(r=>r.b&&r.b.vencida).length;
+  let h='<div class="card pad"><div class="mut">Mejor combinación (precio más bajo vigente por ítem)</div><div class="grande">'+fmt$(C.total)+'</div><div class="mut">'+fmt$(C.totalSin)+' sin IVA · precios de cotizaciones guardadas</div><div style="margin-top:8px">'+
+    '<span class="tag ok">'+con+' con precio</span> '+(sin?'<span class="tag bad">'+sin+' sin cotizar</span> ':'')+(venc?'<span class="tag bad">'+venc+' solo con precio vencido</span> ':'')+(al?'<span class="tag warn">'+al+' con unidades por revisar</span>':'')+'</div></div>';
+  if(C.pv.length){h+='<h3>Por proveedor</h3>'+C.pv.map(x=>'<div class="card pad"><div class="renglon" style="border:0;padding:0"><span><b>'+esc(x.c.nombre)+'</b><div class="mut">Cotizó '+x.n+' de '+C.rows.length+' · si le compras todo lo que cotizó: '+fmt$(x.total)+'</div></span></div>'+
+    (x.gana.length?'<div class="mut" style="margin-top:6px">Más barato en '+x.gana.length+' ítem(s): '+fmt$(x.gana.reduce((s,r)=>s+r.b.unit*r.cant,0))+'</div><button class="btn wa chico ancho" data-pedir="'+x.c.id+'">'+ic.wa+' Hacer pedido de esos '+x.gana.length+' ítems</button>':'')+'</div>').join('')}
+  h+='<h3>Ítem por ítem</h3>'+C.rows.map(r=>'<div class="card pad"><div class="nom" style="font-size:16px">'+esc(r.m.nombre)+'</div><div class="mut">'+fmtN(r.cant)+' '+esc(r.l.und||r.m.unidad)+(r.l.desp?' (incluye '+fmtN(r.l.desp)+'% desp.)':'')+'</div>'+
+    (r.alerta?'<p class="aviso" style="margin:8px 0 0">La lista está en '+esc(r.l.und)+' y el catálogo en '+esc(r.m.unidad)+'. Edita el renglón en la lista para convertir.</p>':r.ofs.length?r.ofs.map(o=>'<div class="renglon '+(o===r.b?'mejor':'')+'"><span>'+(o===r.b?'✓ ':'')+esc(o.contacto.nombre)+'<div class="mut">'+fmt$(o.unit)+'/'+esc(r.m.unidad)+' · '+fechaTxt(o.cot.fecha)+(o.vencida?' <span class="tag bad">vencida</span>':'')+'</div></span><span class="num">'+fmt$(o.unit*r.cant)+'</span></div>').join(''):'<div class="mut" style="margin-top:6px"><span class="tag bad">Sin cotizar</span></div>')+'</div>').join('');
+  return h}
+const cantTxt=(n,dec)=>dec?fmtN(n):Math.ceil(n-1e-9).toLocaleString('es-CO');
+function textoCotizar(p){const ls=S.lista.filter(l=>l.proyectoId===p.id).map(l=>({l,m:material(l.materialId)})).filter(x=>x.m).sort((a,b)=>a.m.nombre.localeCompare(b.m.nombre,'es'));
+  return 'Hola, buen día. Me puedes cotizar por favor lo siguiente para la obra '+p.nombre+':\n\n'+ls.map(({l,m})=>'- '+m.nombre+': '+fmtN(l.cant*(1+(l.desp||0)/100))+' '+(l.und||m.unidad)).join('\n')+'\n\nPor favor indica si los precios incluyen IVA y el valor del transporte. Gracias.'}
+function textoPedido(p,cid){const C=comparar(p.id);const x=C.pv.find(v=>v.c.id===cid);if(!x)return'';
+  return 'Hola '+x.c.nombre+', buen día. Para la obra '+p.nombre+' quiero hacer el siguiente pedido según tu cotización:\n\n'+x.gana.map(r=>{const it=r.b.it;const f=it.factor>0?it.factor:1;return '- '+r.m.nombre+': '+cantTxt(r.cant/f,f===1)+' '+(it.und||r.m.unidad)}).join('\n')+'\n\n¿Me confirmas disponibilidad, valor total y fecha de entrega? Gracias.'}
+function enviarTexto(txt,c){const provs=[...S.contactos].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+  abrirModal('<div class="frm"><h2>Mensaje</h2><textarea id="tx" rows="9">'+esc(txt)+'</textarea>'+
+  (c?'<a class="btn wa ancho" id="w1" target="_blank" rel="noopener">'+ic.wa+' Enviar a '+esc(c.nombre)+'</a>':'<div class="lbl">Enviar por WhatsApp a:</div><select id="dest"><option value="">— Elige proveedor —</option>'+provs.map(x=>'<option value="'+x.id+'">'+esc(x.nombre)+(x.categoria?' · '+esc(x.categoria):'')+'</option>').join('')+'</select><a class="btn wa ancho" id="w1" target="_blank" rel="noopener">'+ic.wa+' Abrir WhatsApp</a>')+
+  '<div class="fila"><button class="btn sec" id="cp">Copiar</button><button class="btn sec" id="sh">'+ic.share+' Compartir</button></div><div class="botones"><button class="btn sec" data-cerrar>Cerrar</button></div></div>',h=>{
+    const t=()=>$('#tx',h).value;
+    $('#w1',h).onclick=e=>{const k=c||contacto(($('#dest',h)||{}).value);if(!k){e.preventDefault();return toast('Elige a quién enviar')}const n=intl(k.wa||k.tel);if(!n){e.preventDefault();return toast('Ese contacto no tiene número')}e.currentTarget.href='https://wa.me/'+n+'?text='+encodeURIComponent(t())};
+    $('#cp',h).onclick=async()=>{try{await navigator.clipboard.writeText(t());toast('Copiado')}catch(e){$('#tx',h).select();document.execCommand('copy');toast('Copiado')}};
+    $('#sh',h).onclick=async()=>{try{await navigator.share({text:t()})}catch(e){}}})}
+
+/* importación CSV (tabla de cantidades de Revit) */
+async function leerTexto(f){const b=new Uint8Array(await f.arrayBuffer());let t;if(b[0]===0xFF&&b[1]===0xFE)t=new TextDecoder('utf-16le').decode(b);else if(b[0]===0xFE&&b[1]===0xFF)t=new TextDecoder('utf-16be').decode(b);else{try{t=new TextDecoder('utf-8',{fatal:true}).decode(b)}catch(e){t=new TextDecoder('windows-1252').decode(b)}}return t.replace(/^\uFEFF/,'')}
+function parseCSV(txt){const t=txt.replace(/\r\n?/g,'\n');const muestra=t.split('\n').slice(0,15).join('\n');const del=muestra.includes('\t')?'\t':(muestra.includes(';')?';':',');
+  const rows=[];let row=[],cell='',q=false;for(let i=0;i<t.length;i++){const ch=t[i];if(q){if(ch==='"'){if(t[i+1]==='"'){cell+='"';i++}else q=false}else cell+=ch}else if(ch==='"'&&cell.trim()==='')q=true;else if(ch===del){row.push(cell);cell=''}else if(ch==='\n'){row.push(cell);rows.push(row);row=[];cell=''}else cell+=ch}
+  if(cell!==''||row.length){row.push(cell);rows.push(row)}return rows.map(r=>r.map(c=>c.trim())).filter(r=>r.some(Boolean))}
+function splitNumUnit(s){const m=String(s||'').trim().match(/^(-?[\d.,]+)\s*(.*)$/);return m?{num:m[1],u:m[2].trim()}:{num:'',u:''}}
+function formCSV(pid){abrirModal('<div class="frm"><h2>Importar lista</h2><p class="mut">En Revit: tabla de cantidades → Archivo → Exportar → Informes → Tabla. Sirve el .txt o un .csv de Excel. Luego pásalo al celular (Drive, WhatsApp, cable).</p><label class="btn sec ancho">'+ic.up+' Elegir archivo<input type="file" id="fcsv" accept=".csv,.txt,text/csv,text/plain,text/tab-separated-values" hidden></label><div id="cfg"></div><div class="botones"><button class="btn sec" data-cerrar>Cancelar</button></div></div>',h=>{
+  $('#fcsv',h).onchange=async e=>{const f=e.target.files[0];if(!f)return;const rows=parseCSV(await leerTexto(f));if(rows.length<2)return toast('El archivo no tiene datos');configCSV(h,rows,pid)}})}
+function configCSV(h,rows,pid){const ncol=Math.max(...rows.map(r=>r.length));let hi=rows.findIndex(r=>r.filter(Boolean).length>=2);if(hi<0)hi=0;
+  const cfg={hi,cMat:-1,c2:-1,cCant:-1,cUnd:-1,desp:0};
+  const nombresDe=()=>[...Array(ncol)].map((_,i)=>rows[cfg.hi][i]||('Columna '+(i+1)));
+  const adivinar=()=>{const n=nombresDe();const g=re=>n.findIndex(x=>re.test(x));cfg.cMat=g(/material|descrip|nombre|tipo|type|famil|[ií]tem|elemento/i);if(cfg.cMat<0)cfg.cMat=0;
+    cfg.cCant=n.findIndex((x,i)=>i!==cfg.cMat&&/cant|count|recuento|volum|[aá]rea|longitud|length|metr|total|peso|kg/i.test(x));
+    if(cfg.cCant<0)cfg.cCant=n.findIndex((_,i)=>i!==cfg.cMat&&rows.slice(cfg.hi+1).some(r=>parseNum(splitNumUnit(r[i]).num)>0));
+    cfg.cUnd=n.findIndex(x=>/^(unidad|und|unit|u\.?)$/i.test(x))};
+  adivinar();
+  const calc=()=>{const data=rows.slice(cfg.hi+1);if(cfg.cCant<0)return[];const dec=detectDec(data.map(r=>splitNumUnit(r[cfg.cCant]).num));const map=new Map();
+    for(const r of data){let nom=(r[cfg.cMat]||'').trim();if(cfg.c2>=0&&r[cfg.c2])nom=(nom+' '+r[cfg.c2].trim()).trim();if(!nom||/^total/i.test(nom))continue;const sp=splitNumUnit(r[cfg.cCant]);const n=parseNumDec(sp.num,dec);if(!(n>0))continue;
+      const u=((cfg.cUnd>=0?r[cfg.cUnd]:sp.u)||'').trim()||'und';const k=norm(nom)+'|'+norm(u);const ex=map.get(k);if(ex)ex.cant+=n;else map.set(k,{nombre:nom,und:u,cant:n})}return[...map.values()]};
+  const sel=(id,val,opc)=>'<select id="'+id+'">'+(opc?'<option value="-1">— ninguna —</option>':'')+nombresDe().map((n,i)=>'<option value="'+i+'" '+(i===val?'selected':'')+'>'+esc(n)+'</option>').join('')+'</select>';
+  const pintar=()=>{const it=calc();
+    $('#cfg',h).innerHTML='<label>Fila de encabezados<select id="shi">'+rows.slice(0,Math.min(rows.length,12)).map((r,i)=>'<option value="'+i+'" '+(i===cfg.hi?'selected':'')+'>Fila '+(i+1)+': '+esc(r.filter(Boolean).slice(0,3).join(' | ').slice(0,50))+'</option>').join('')+'</select></label>'+
+    '<div class="dos"><label>Columna material'+sel('smat',cfg.cMat)+'</label><label>Sumar al nombre'+sel('sc2',cfg.c2,true)+'</label></div>'+
+    '<div class="dos"><label>Columna cantidad'+sel('scant',cfg.cCant)+'</label><label>Columna unidad'+sel('sund',cfg.cUnd,true)+'</label></div>'+
+    '<label>Desperdicio para todos (%)<input id="sdesp" inputmode="decimal" value="'+cfg.desp+'"></label>'+
+    '<div class="lbl">Vista previa: '+it.length+' materiales</div><div class="pre">'+(it.length?it.slice(0,40).map(x=>esc(x.nombre)+' — '+fmtN(x.cant)+' '+esc(x.und)).join('\n')+(it.length>40?'\n…':''):'No encuentro cantidades con esa configuración.')+'</div>'+
+    (it.length?'<div class="fila"><button class="btn" id="iadd">Agregar a la lista</button><button class="btn sec" id="irep">Reemplazar lista</button></div>':'');
+    $('#shi',h).onchange=e=>{cfg.hi=+e.target.value;adivinar();pintar()};
+    $('#smat',h).onchange=e=>{cfg.cMat=+e.target.value;pintar()};$('#sc2',h).onchange=e=>{cfg.c2=+e.target.value;pintar()};
+    $('#scant',h).onchange=e=>{cfg.cCant=+e.target.value;pintar()};$('#sund',h).onchange=e=>{cfg.cUnd=+e.target.value;pintar()};
+    $('#sdesp',h).onchange=e=>{cfg.desp=parseNum(e.target.value)||0};
+    const go=async rep=>{if(rep&&!confirm('¿Borrar la lista actual y dejar solo lo importado?'))return;cfg.desp=parseNum($('#sdesp',h).value)||0;const n=await importar(it,pid,cfg.desp,rep);toast(n+' materiales importados');cerrarModal(()=>render(false))};
+    const a=$('#iadd',h),b=$('#irep',h);if(a)a.onclick=()=>go(false);if(b)b.onclick=()=>go(true)};
+  pintar()}
+async function importar(items,pid,desp,rep){if(rep)for(const l of S.lista.filter(l=>l.proyectoId===pid))await borrar('lista',l.id);
+  for(const it of items){const mid=await materialId(it.nombre,it.und);const ex=S.lista.find(l=>l.proyectoId===pid&&l.materialId===mid&&norm(l.und)===norm(it.und));
+    if(ex)await guardar('lista',{...ex,cant:ex.cant+it.cant});else await guardar('lista',{id:uid(),proyectoId:pid,materialId:mid,cant:it.cant,und:it.und,desp})}return items.length}
+
+/* ---------- RESPALDO ---------- */
+const blobAData=b=>new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(b)});
+async function respaldar(){toast('Preparando respaldo…');const data={};for(const k of Object.keys(S))data[k]=S[k];
+  data.fotos=await Promise.all((await dbAll('fotos')).map(async f=>({id:f.id,data:await blobAData(f.blob)})));
+  const json=JSON.stringify({app:'proveedores',v:1,fecha:new Date().toISOString(),data});const base='respaldo-proveedores-'+hoyISO();
+  for(const [ext,tipo] of [['json','application/json'],['txt','text/plain']]){const file=new File([json],base+'.'+ext,{type:tipo});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:file.name});await setMeta('ultimoRespaldo',hoyISO());toast('Respaldo enviado');render(false);return}catch(e){if(e.name==='AbortError')return}}}
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));a.download=base+'.json';document.body.append(a);a.click();a.remove();await setMeta('ultimoRespaldo',hoyISO());toast('Respaldo descargado');render(false)}
+async function restaurar(file){let o;try{o=JSON.parse(await file.text())}catch(e){return alert('Ese archivo no es un respaldo válido.')}
+  if(!o||o.app!=='proveedores'||!o.data)return alert('Ese archivo no es un respaldo de esta app.');
+  if(!confirm('Esto REEMPLAZA todo lo que hay en el celular por el respaldo del '+new Date(o.fecha).toLocaleDateString('es-CO')+'. ¿Seguir?'))return;
+  for(const k of Object.keys(S)){await dbClear(k);for(const x of (o.data[k]||[]))await dbPut(k,x)}
+  await dbClear('fotos');for(const f of (o.data.fotos||[])){const blob=await (await fetch(f.data)).blob();await dbPut('fotos',{id:f.id,blob})}
+  await cargar();refrescarListas();toast('Respaldo restaurado');location.hash='dir';render()}
+let instalarEv=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();instalarEv=e;if((location.hash||'').startsWith('#mas'))render(false)});
+async function vMas(){setTop('Respaldo y app');setFab(null);const nf=(await dbAll('fotos')).length;let est='';try{const e=await navigator.storage.estimate();est=(e.usage/1048576).toFixed(1)+' MB usados'}catch(e){}
+  let pers=false;try{pers=await navigator.storage.persisted()}catch(e){}const u=META.ultimoRespaldo;
+  $('#vista').innerHTML=(instalarEv?'<button class="btn ancho" id="ins" style="margin:0 0 12px">Instalar en el celular</button>':'')+
+  '<div class="card pad"><div class="renglon"><span>Contactos</span><b>'+S.contactos.length+'</b></div><div class="renglon"><span>Cotizaciones</span><b>'+S.cotizaciones.length+'</b></div><div class="renglon"><span>Fotos y PDF</span><b>'+nf+'</b></div><div class="renglon"><span>Materiales</span><b>'+S.materiales.length+'</b></div><div class="renglon"><span>Proyectos</span><b>'+S.proyectos.length+'</b></div><div class="renglon"><span>Almacenamiento</span><span>'+est+(pers?' · <span class="tag ok">protegido</span>':' · <span class="tag warn">no protegido</span>')+'</span></div><div class="renglon"><span>Último respaldo</span><b>'+(u?fechaTxt(u):'nunca')+'</b></div></div>'+
+  '<button class="btn ancho" id="res">'+ic.cloud+' Respaldar ahora</button><p class="mut">Se abre el menú de compartir: elige <b>Drive</b> y guárdalo en tu carpeta de respaldos. Incluye fotos y PDF.</p>'+
+  '<label class="btn sec ancho">'+ic.up+' Restaurar desde un respaldo<input type="file" id="rst" accept=".json,.txt,application/json,text/plain" hidden></label><p class="mut">Úsalo si cambias de celular o se borra la app.</p>'+
+  '<h3>Notas</h3><p class="mut">Todo vive en este celular y funciona sin señal. WhatsApp y Maps sí necesitan conexión; la llamada no. Los precios se comparan con IVA del 19% según lo que marques en cada ítem.</p>';
+  const ins=$('#ins');if(ins)ins.onclick=async()=>{instalarEv.prompt();await instalarEv.userChoice;instalarEv=null;render(false)};
+  $('#res').onclick=respaldar;$('#rst').onchange=e=>{if(e.target.files[0])restaurar(e.target.files[0])}}
+
+/* ---------- arranque ---------- */
+(async function(){
+  const navs=[['dir','people','Directorio'],['cot','doc','Cotizaciones'],['mat','box','Materiales'],['pro','folder','Proyectos'],['mas','cloud','Respaldo']];
+  $$('#nav button').forEach((b,i)=>{b.innerHTML=ic[navs[i][1]]+navs[i][2];b.onclick=()=>{location.hash=navs[i][0]}});
+  try{await abrirDB();await cargar()}catch(e){$('#vista').innerHTML=vacio('No se pudo abrir la base de datos del celular: '+esc(e.message));return}
+  refrescarListas();render();
+  try{if(navigator.storage&&navigator.storage.persist)await navigator.storage.persist()}catch(e){}
+  if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script>
+</body>
+</html>
