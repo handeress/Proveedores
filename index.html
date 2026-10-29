@@ -218,7 +218,7 @@ function bannerRespaldo(){const hay=S.contactos.length+S.cotizaciones.length+S.l
 /* ---------- DIRECTORIO ---------- */
 function linkMapa(c){if(c.lat!=null&&c.lng!=null)return 'geo:'+c.lat+','+c.lng+'?q='+c.lat+','+c.lng+'('+encodeURIComponent(c.nombre||'')+')';if(c.mapsUrl)return c.mapsUrl;if(c.direccion)return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(c.direccion+' '+(c.municipio||''));return ''}
 function acciones(c){const b=[];if(c.tel)b.push('<a class="acc" href="tel:+'+intl(c.tel)+'">'+ic.tel+'Llamar</a>');
-  if(c.wa||c.tel)b.push('<a class="acc wa" href="https://wa.me/'+intl(c.wa||c.tel)+'" target="_blank" rel="noopener">'+ic.wa+'WhatsApp</a>');
+  const wn=c.wa||(String(c.tel||'').replace(/\D/g,'').replace(/^57/,'').startsWith('3')?c.tel:'');if(wn)b.push('<a class="acc wa" href="https://wa.me/'+intl(wn)+'" target="_blank" rel="noopener">'+ic.wa+'WhatsApp</a>');
   const mp=linkMapa(c);if(mp)b.push('<a class="acc" href="'+esc(mp)+'"'+(mp.startsWith('geo:')?'':' target="_blank" rel="noopener"')+'>'+ic.map+'Mapa</a>');
   return b.length?'<div class="accs">'+b.join('')+'</div>':''}
 const estrellas=n=>n?'<div class="stars">'+'★'.repeat(n)+'☆'.repeat(5-n)+'</div>':'';
