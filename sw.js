@@ -1,5 +1,5 @@
 // Guarda la app en el celular para que abra sin señal.
-const CACHE = 'proveedores-v4';
+const CACHE = 'proveedores-v5';
 const ARCHIVOS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -17,6 +17,8 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) return;
+  // Buzón y datos iniciales: siempre de la red, nunca de lo guardado.
+  if (url.pathname.includes('/buzon/') || url.pathname.endsWith('carga.bin')) return;
   e.respondWith(
     caches.open(CACHE).then(async c => {
       const guardado = await c.match(e.request, { ignoreSearch: true });
