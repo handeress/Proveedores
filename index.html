@@ -472,6 +472,21 @@ async function aplicarRespaldo(o){
   for(const k of Object.keys(S)){await dbClear(k);for(const x of (o.data[k]||[]))await dbPut(k,x)}
   await dbClear('fotos');for(const f of (o.data.fotos||[])){const blob=await (await fetch(f.data)).blob();await dbPut('fotos',{id:f.id,blob})}
   await cargar();refrescarListas();toast('Datos cargados');location.hash='dir';render()}
+/* sumar datos de un archivo sin borrar lo que hay (mismo formato del respaldo) */
+async function sumarArchivo(file){let o;try{o=JSON.parse(await file.text())}catch(e){return alert('Ese archivo no es válido.')}
+  if(!o||o.app!=='proveedores'||!o.data)return alert('Ese archivo no es de esta app.');
+  const d=o.data,mapC={},mapM={};let nc=0,nm=0,nq=0,nf=0,np=0;toast('Sumando…');
+  for(const c of (d.contactos||[])){const ex=S.contactos.find(x=>x.id===c.id)||S.contactos.find(x=>(c.tel&&x.tel&&intl(x.tel)===intl(c.tel))||norm(x.nombre)===norm(c.nombre));
+    if(ex){mapC[c.id]=ex.id;const m={...ex};let cambio=false;for(const k in c){if(k==='id'||k==='creado')continue;if((m[k]==null||m[k]==='')&&c[k]!=null&&c[k]!==''){m[k]=c[k];cambio=true}}
+      if(c.notas&&ex.notas&&!norm(ex.notas).includes(norm(c.notas))){m.notas=ex.notas+'\n\n'+c.notas;cambio=true}if(cambio)await guardar('contactos',m)}
+    else{mapC[c.id]=c.id;await guardar('contactos',c);nc++}}
+  for(const m of (d.materiales||[])){const ex=S.materiales.find(x=>x.id===m.id)||matPorNombre(m.nombre);if(ex)mapM[m.id]=ex.id;else{mapM[m.id]=m.id;await guardar('materiales',m);nm++}}
+  for(const p of (d.proyectos||[]))if(!proyecto(p.id)){await guardar('proyectos',p);np++}
+  for(const f of (d.fotos||[]))if(!(await dbGet('fotos',f.id))){const blob=await (await fetch(f.data)).blob();await dbPut('fotos',{id:f.id,blob});nf++}
+  for(const q of (d.cotizaciones||[]))if(!S.cotizaciones.find(x=>x.id===q.id)){
+    await guardar('cotizaciones',{...q,contactoId:mapC[q.contactoId]||q.contactoId,items:(q.items||[]).map(it=>({...it,materialId:mapM[it.materialId]||it.materialId}))});nq++}
+  for(const l of (d.lista||[]))if(!S.lista.find(x=>x.id===l.id))await guardar('lista',{...l,materialId:mapM[l.materialId]||l.materialId});
+  refrescarListas();alert('Listo. Nuevos: '+nc+' contactos, '+nq+' cotizaciones, '+nm+' materiales, '+nf+' fotos'+(np?', '+np+' proyectos':'')+'.\nNo se borró nada de lo que tenías. Si lo cargas otra vez no se duplica.');location.hash='dir';render()}
 async function cargarIniciales(){const clave=prompt('Clave de los datos iniciales:');if(!clave)return;
   try{toast('Descargando…');const r=await fetch('carga.bin?'+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('No se pudo descargar ('+r.status+'). Revisa la conexión.');
     const b=new Uint8Array(await r.arrayBuffer());const salt=b.slice(0,16),iv=b.slice(16,28),ct=b.slice(28);
@@ -485,10 +500,11 @@ async function vMas(){setTop('Respaldo y app');setFab(null);const nf=(await dbAl
   $('#vista').innerHTML=(instalarEv?'<button class="btn ancho" id="ins" style="margin:0 0 12px">Instalar en el celular</button>':'')+
   '<div class="card pad"><div class="renglon"><span>Contactos</span><b>'+S.contactos.length+'</b></div><div class="renglon"><span>Cotizaciones</span><b>'+S.cotizaciones.length+'</b></div><div class="renglon"><span>Fotos y PDF</span><b>'+nf+'</b></div><div class="renglon"><span>Materiales</span><b>'+S.materiales.length+'</b></div><div class="renglon"><span>Proyectos</span><b>'+S.proyectos.length+'</b></div><div class="renglon"><span>Almacenamiento</span><span>'+est+(pers?' · <span class="tag ok">protegido</span>':' · <span class="tag warn">no protegido</span>')+'</span></div><div class="renglon"><span>Último respaldo</span><b>'+(u?fechaTxt(u):'nunca')+'</b></div></div>'+
   '<button class="btn sec ancho" onclick="cargarIniciales()" style="margin:0 0 4px">Cargar datos iniciales (con clave)</button><button class="btn ancho" id="res">'+ic.cloud+' Respaldar ahora</button><p class="mut">Se abre el menú de compartir: elige <b>Drive</b> y guárdalo en tu carpeta de respaldos. Incluye fotos y PDF.</p>'+
-  '<label class="btn sec ancho">'+ic.up+' Restaurar desde un respaldo<input type="file" id="rst" accept=".json,.txt,application/json,text/plain" hidden></label><p class="mut">Úsalo si cambias de celular o se borra la app.</p>'+
+  '<label class="btn ancho">'+ic.up+' Sumar datos desde archivo<input type="file" id="sum" accept=".json,.txt,application/json,text/plain" hidden></label><p class="mut">Agrega contactos, cotizaciones y fotos de un archivo <b>sin borrar</b> lo que ya tienes.</p>'+
+  '<label class="btn sec ancho">'+ic.up+' Restaurar desde un respaldo<input type="file" id="rst" accept=".json,.txt,application/json,text/plain" hidden></label><p class="mut">Úsalo si cambias de celular o se borra la app. <b>Reemplaza todo.</b></p>'+
   '<h3>Notas</h3><p class="mut">Todo vive en este celular y funciona sin señal. WhatsApp y Maps sí necesitan conexión; la llamada no. Los precios se comparan con IVA del 19% según lo que marques en cada ítem.</p>';
   const ins=$('#ins');if(ins)ins.onclick=async()=>{instalarEv.prompt();await instalarEv.userChoice;instalarEv=null;render(false)};
-  $('#res').onclick=respaldar;$('#rst').onchange=e=>{if(e.target.files[0])restaurar(e.target.files[0])}}
+  $('#res').onclick=respaldar;$('#rst').onchange=e=>{if(e.target.files[0])restaurar(e.target.files[0])};$('#sum').onchange=e=>{if(e.target.files[0])sumarArchivo(e.target.files[0])}}
 
 /* ---------- arranque ---------- */
 (async function(){
